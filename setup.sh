@@ -31,9 +31,13 @@ echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
 # 2. Adding env variables
 EMAIL="your-email@gmail.com"
 PUBLIC_IP=$(curl -s ifconfig.me)
-DOMAIN_NAME="YOUR_DOMAIN_NAME" # If using duckdns than call: curl "https://www.duckdns.org/update?domains=NAME&token=TOKEN&ip="
+DOMAIN_NAME="YOUR_DOMAIN_NAME"
 ADMIN_PASS="YOUR_PASSWORD"
 ADMIN_PASS_HASH=$(docker run --rm ghcr.io/wg-easy/wg-easy wgpw $ADMIN_PASS | cut -d"'" -f2 | sed 's/\$/$$/g')
+
+### If you using free DNS services, you need to assing public IP to the new created domain, like that:
+### duckdns: curl "https://www.duckdns.org/update?domains=NAME&token=TOKEN&ip="
+### dedyn.io: curl -4 "https://update.dedyn.io/update?username=NAME&password=TOKEN"
 
 # 3. Creating Wireguard directory
 mkdir -p /opt/wireguard
@@ -112,3 +116,4 @@ sudo ln -s /snap/bin/certbot /usr/bin/certbot
 certbot --nginx -d $DOMAIN_NAME --agree-tos -m $EMAIL --no-eff-email --redirect
 
 echo "VPN Ready! https://$DOMAIN_NAME"
+
