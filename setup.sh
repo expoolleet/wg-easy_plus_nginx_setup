@@ -29,6 +29,7 @@ sysctl -w net.ipv4.ip_forward=1
 echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
 
 # 2. Adding env variables
+EMAIL="your-email@gmail.com"
 PUBLIC_IP=$(curl -s ifconfig.me)
 DOMAIN_NAME="YOUR_DOMAIN_NAME" # If using duckdns than call: curl "https://www.duckdns.org/update?domains=NAME&token=TOKEN&ip="
 ADMIN_PASS="YOUR_PASSWORD"
@@ -100,7 +101,14 @@ rm -f /etc/nginx/sites-enabled/default
 # 6.3. Restarting Nginx
 nginx -t && systemctl restart nginx
 
-# 7. Setting up SSL certificate (https)
-certbot --nginx -d $DOMAIN_NAME --agree-tos -m "your-email@gmail.com" --no-eff-email --redirect
+# 7. Setting up SSL certificate for our domain
+# 7.1. Installing snap packaging format will allow us to intall a newer version of certbot
+sudo apt install snapd -y
+sudo snap install core; sudo snap refresh core
+sudo snap install --classic certbot
+sudo ln -s /snap/bin/certbot /usr/bin/certbot
+
+# 7.2. Setting up nginx with certbot
+certbot --nginx -d $DOMAIN_NAME --agree-tos -m $EMAIL --no-eff-email --redirect
 
 echo "VPN Ready! https://$DOMAIN_NAME"
