@@ -122,6 +122,19 @@ docker compose up -d
 # --- 7. Nginx Reverse Proxy Setup ---
 echo "Configuring Nginx Reverse Proxy..."
 cat << EOF > /etc/nginx/sites-available/wg-easy
+
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+    listen 443 ssl default_server;
+    server_name _;
+
+    ssl_certificate /etc/letsencrypt/live/$DOMAIN_NAME/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/$DOMAIN_NAME/privkey.pem;
+
+    return 444;
+}
+
 server {
     listen 80;
     server_name $DOMAIN_NAME;
@@ -156,3 +169,4 @@ echo "INSTALLATION COMPLETE"
 echo "VPN Web UI: https://$DOMAIN_NAME"
 echo "AdGuard Admin: http://$PUBLIC_IP:3000 (Use VPN to access)"
 echo "--------------------------------------------------------"
+
